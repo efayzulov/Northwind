@@ -55,12 +55,6 @@
     <Compile Include="ApiClients\Concrete\CategoryApiClient.cs" />
     <Compile Include="ApiClients\Concrete\CustomerApiClient.cs" />
     <Compile Include="ApiClients\Concrete\EmployeApiClient.cs" />
-    <Compile Include="Employe.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Employe.Designer.cs">
-      <DependentUpon>Employe.cs</DependentUpon>
-    </Compile>
     <Compile Include="Extensions\HttpClientExtensions.cs" />
     <Compile Include="Category.cs">
       <SubType>Form</SubType>
@@ -72,9 +66,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Category.resx">
       <DependentUpon>Category.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Employe.resx">
-      <DependentUpon>Employe.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

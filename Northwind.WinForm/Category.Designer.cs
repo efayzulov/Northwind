@@ -156,7 +156,7 @@ namespace Northwind.WinForm
             this.Controls.Add(this.lblId);
             this.Controls.Add(this.textBoxId);
             this.Name = "Category";
-            this.Text = "Form1";
+            this.Text = "Category";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvEmploye)).EndInit();
             this.ResumeLayout(false);
