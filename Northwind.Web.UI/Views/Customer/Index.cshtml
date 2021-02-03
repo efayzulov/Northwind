@@ -1,0 +1,210 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index Customer</h2>
+
+
+<div class="row">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#customerModal">
+        Create
+    </button>
+
+    <table id="customerDataTable" class="display">
+        <thead>
+            <tr>
+                @*<th>Id</th>*@
+                <th>CompanyName</th>
+                <th>ContactName</th>
+                <th>ContactTitle</th>
+                <th>Address</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="customerModal" aria-hidden="true">
+        <div class="modal-dialog modal-md modal- modal-dialog-centered modal-" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal-title-default">
+                        <i class="far fa-building"></i>
+                        Customer
+                    </h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form novalidate="">
+                    <div class="modal-body">
+                        <div class="card-body">
+                            <input type="hidden" id="Id" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">Copmany Name</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="CompanyName" name="CompanyName" />
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">Contact Name</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="ContactName" name="CompanyName" />
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">Contact Title </label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="ContactTitle" name="CompanyName" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Description">Address</label>&nbsp;<span class="validate">*</span>
+                                    <textarea type="text" class="form-control" id="Address" name="Description" style="height:100px"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success bg-green" id="saveCustomer">
+                            <i class="fas fa-save"></i>
+                            Save
+                        </button>
+                        <button type="button" class="btn btn-link ml-auto" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+        (function () {
+            'use strict';
+
+            var Id = $("#Id");
+            var Name = $("#CompanyName");
+            var ContactName = $("#ContactName");
+            var ContacTitle = $("#ContactTitle");
+            var Description = $("#Address");
+
+
+            $("#addCustomerBtn").click(function () {
+                resetValues();
+                $("#customerModal").modal({ backdrop: 'static', keyboard: false });
+            });
+
+            // reset values function
+            function resetValues() {
+                Id.val("");
+                $("input,textarea").val("");
+            }
+
+            var table = $('#customerDataTable').DataTable({
+                "processing": true,
+                "pageLength": 20,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50]],
+                "order": [[0, "desc"]],
+                "ajax": {
+                    "url": "/Customer/CustomerReadData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    //{ "data": "Id" },
+                    { "data": "CompanyName" },
+                    { "data": "ContactName" },
+                    { "data": "ContactTitle" },
+                    { "data": "Address" },
+                    {
+                        "data": "Id",
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-secondary btn-sm updateRow' id='" + data + "'>\
+                                                                                <i class='far fa-edit update' id='" + data + "'></i>&nbsp;Edit</button>" +
+                                "&nbsp;\
+                                                                            <button type='button' class='btn btn-danger btn-sm deleteRow' id='"+ data + "'>\
+                                                                                <i class='far fa-trash-alt'></i>&nbsp;Delete</button>";
+                        }
+                    }
+                ],
+                scrollY: "100%",
+                scrollCollapse: true,
+            });
+
+            // refresh table button
+            $('#refreshCustomerBtn').click(function () {
+                table.ajax.reload();
+            });
+
+            // create
+            $('#saveCustomer').click(function () {
+                if (Name.val() == "" || Name.val() == null) {
+                    alert("Name Ekleyin");
+                }
+                else if (Description.val() == "" || Description.val() == null) {
+                    alert("Description Ekleyin ");
+                }
+                else {
+
+                    var id = Id.val() == "" ? 0 : Id.val();
+                    var parameters = {
+                        Id: id,
+                        CompanyName: CompanyName.val(),
+                        ContactName: ContactName.val(),
+                        ContactTitle: ContactName.val(),
+                        Address: ContactName.val()
+                    };
+
+                    $.post("/Customer/SaveCustomer", parameters, function (data) {
+                        if (data.Success) {
+                            $('#customerModal').modal('hide');
+                            table.ajax.reload();
+                            resetValues();
+                        }
+                    });
+                }
+            });
+
+
+            $('#customerDataTable').on('click', 'tr td .deleteRow', function () {
+                var id = $(this).attr('id');
+
+                if (confirm("silme işlemi yapılsın mı?")) {
+                    $.post("/Customer/DeleteCustomer", { id: id }, function (data) {
+                        if (data.Success) {
+                            alert("success");
+                            table.ajax.reload();
+                        }
+                    });
+                }
+            });
+
+
+            // edit
+            $('#customerDataTable').on('click', 'tr td .updateRow', function () {
+                var id = $(this).attr('id');
+                $("#customerModal").modal('show');
+
+                $.getJSON("/Customer/EditCustomer", { id: id }, function (response) {
+                    Id.val(response.data.Id);
+                    CompanyName.val(response.data.CompanyName);
+                    ContactName.val(response.data.ContactName);
+                    ContacTitle.val(response.data.ContactTitle);
+                    address.val(response.data.address);
+                });
+            });
+
+            //when hide modal resetting modal
+            $('#customerModal').on('hidden.bs.modal', function () {
+                resetValues();
+            });
+
+        })();
+    </script>
+}

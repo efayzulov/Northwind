@@ -1,0 +1,189 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index Category</h2>
+
+<div class="row">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#categoryModal">
+        Create
+    </button>
+
+    <table id="categoryDataTable" class="display">
+        <thead>
+            <tr>
+                <th>Category Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModal" aria-hidden="true">
+        <div class="modal-dialog modal-md modal- modal-dialog-centered modal-" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal-title-default">
+                        <i class="far fa-building"></i>
+                        Category
+                    </h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form novalidate="">
+                    <div class="modal-body">
+                        <div class="card-body">
+                            <input type="hidden" id="Id" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">Name</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="Name" name="Name" />
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Description">Description</label>&nbsp;<span class="validate">*</span>
+                                    <textarea type="text" class="form-control" id="Description" name="Description" style="height:100px"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success bg-green" id="saveCategory">
+                            <i class="fas fa-save"></i>
+                            Save
+                        </button>
+                        <button type="button" class="btn btn-link ml-auto" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script>
+        (function () {
+            'use strict';
+
+            var Id = $("#Id");
+            var Name = $("#Name");
+            var Description = $("#Description");
+
+
+            $("#addCategoryBtn").click(function () {
+                 resetValues();
+                $("#categoryModal").modal({ backdrop: 'static',keyboard: false });
+            });
+
+            // reset values function
+            function resetValues() {
+                Id.val("");
+                $("input,textarea").val("");
+            }
+
+            var table = $('#categoryDataTable').DataTable({
+                "processing": true,
+                "pageLength": 20,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50]],
+                "order": [[0, "desc"]],
+                "ajax": {
+                    "url": "/Category/CategoryReadData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Id" },
+                    { "data": "Name" },
+                    { "data": "Description" },
+                    {
+                        "data": "Id",
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-secondary btn-sm updateRow' id='" + data + "'>\
+                                                    <i class='far fa-edit update' id='" + data + "'></i>&nbsp;Edit</button>" +
+                                "&nbsp;\
+                                                <button type='button' class='btn btn-danger btn-sm deleteRow' id='"+ data + "'>\
+                                                    <i class='far fa-trash-alt'></i>&nbsp;Delete</button>";
+                        }
+                    }
+                ],
+                scrollY: "100%",
+                scrollCollapse: true,
+            });
+
+            // refresh table button
+            $('#refreshCategoryBtn').click(function () {
+                table.ajax.reload();
+            });
+
+            // create
+            $('#saveCategory').click(function () {
+                if (Name.val() == "" || Name.val() == null) {
+                    alert("Name Ekleyin");
+                }
+                else if (Description.val() == "" || Description.val() == null) {
+                    alert("Description Ekleyin");
+                }
+                else {
+
+                    var id = Id.val() == "" ? 0 : Id.val();
+
+                    var parameters = {
+                        Id: id,
+                        Name: Name.val(),
+                        Description: Description.val()
+                    };
+
+                    $.post("/Category/SaveCategory", parameters, function (data) {
+                        if (data.Success) {
+                            $('#categoryModal').modal('hide');
+                            table.ajax.reload();
+                            resetValues();
+                        }
+                    });
+                }
+            });
+
+
+            $('#categoryDataTable').on('click', 'tr td .deleteRow', function () {
+                var id = $(this).attr('id');
+
+                if (confirm("Silme işlemi yapılsın mı?")) {
+                    $.post("/Category/DeleteCategory", { id: id }, function (data) {
+                        if (data.Success) {
+                            alert("success");
+                            table.ajax.reload();
+                        }
+                    });
+                }
+            });
+
+
+            // edit
+            $('#categoryDataTable').on('click', 'tr td .updateRow', function () {
+                var id = $(this).attr('id');
+                $("#categoryModal").modal('show');
+
+                $.getJSON("/Category/EditCategory", { id: id }, function (response) {
+                    Id.val(response.data.Id);
+                    Name.val(response.data.Name);
+                    Description.val(response.data.Description);
+                });
+            });
+
+            //when hide modal resetting modal
+            $('#categoryModal').on('hidden.bs.modal', function () {
+                resetValues();
+            });
+
+    })();
+    </script>
+}

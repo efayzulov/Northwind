@@ -1,0 +1,249 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="row">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#saveEmploye">
+        Create
+    </button>
+
+    <table id="employeDataTable" class="display">
+        <thead>
+            <tr>
+                @*<th>Employe Id</th>*@
+                <th>LastName</th>
+                <th>FirstName</th>
+                <th>Title</th>
+                <th>TitleOfCourtesy</th>
+                <th>BirthDate</th>
+                <th>HireDate</th>
+                <th>ReportsTo</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="saveEmploye" tabindex="-1" role="dialog" aria-labelledby="saveEmploye" aria-hidden="true">
+        <div class="modal-dialog modal-md modal- modal-dialog-centered modal-" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal-title-default">
+                        <i class="far fa-building"></i>
+                        Employe
+                    </h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form novalidate="">
+                    <div class="modal-body">
+                        <div class="card-body">
+                            <input type="hidden" id="Id" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">LastName</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="LastName" name="Name" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">FirstName</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="FirstName" name="Name" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">Title</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="Title" name="Name" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">TitleOfCourtesy</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="TitleOfCourtesy" name="Name" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">BirthDate</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="Name" name="Name" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">HireDate</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="HireDate" name="Name" />
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Description">Address</label>&nbsp;<span class="validate">*</span>
+                                    <textarea type="text" class="form-control" id="Address" name="Description" style="height:100px"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">Notes</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="Notes" name="Name" />
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-control-label" for="Name">ReportsTo</label>&nbsp;<span class="validate">*</span>
+                                    <input type="text" class="form-control" id="ReportsTo" name="Name" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success bg-green" id="saveCategory">
+                            <i class="fas fa-save"></i>
+                            Save
+                        </button>
+                        <button type="button" class="btn btn-link ml-auto" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        (function () {
+            'use strict';
+            var Id = $(Id);
+            var LastName = $("#LastName");
+            var FirstName = $("#FirstName");
+            var Title = $("#Title");
+            var TitleOfCourtesy = $("#TitleOfCourtesy");
+            var BirthDate = $("#BirthDate");
+            var HireDate = $("#HireDate");
+            var Address = $("#Address");
+            var Notes = $("#Notes");
+            var ReportsTo = $("#HireDate");
+
+
+            $("#addEmployeBtn").click(function () {
+                resetValues();
+                $("#saveEmploye").modal({ backdrop: 'static', keyboard: false });
+            });
+
+            // reset values function
+            function resetValues() {
+                Id.val("");
+                $("input,textarea").val("");
+            }
+
+            var table = $('#employeDataTable').DataTable({
+                "processing": true,
+                "pageLength": 20,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50]],
+                "order": [[0, "desc"]],
+                "ajax": {
+                    "url": "/Employe/EmployeReadData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    //{ "data": "Id" },
+                    { "data": "LastName" },
+                    { "data": "FirstName" },
+                    { "data": "Title" },
+                    { "data": "TitleOfCourtesy" },
+                    { "data": "BirthDate" },
+                    { "data": "HireDate" },
+                    { "data": "ReportsTo" },
+                    {
+                        "data": "Id",
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-secondary btn-sm updateRow' id='" + data + "'>\
+                                                                                                                <i class='far fa-edit update' id='" + data + "'></i>&nbsp;Edit</button>" +
+                                "&nbsp;\
+                                                                                                            <button type='button' class='btn btn-danger btn-sm deleteRow' id='"+ data + "'>\
+                                                                                                                <i class='far fa-trash-alt'></i>&nbsp;Delete</button>";
+                        }
+                    }
+                ],
+                scrollY: "100%",
+                scrollCollapse: true,
+            });
+
+            // refresh table button
+            $('#refreshEmployeBtn').click(function () {
+                table.ajax.reload();
+            });
+
+            // create
+            $('#saveEmploye').click(function () {
+                if (Name.val() == "" || Name.val() == null) {
+                    alert("Name Ekleyin");
+                }
+                else if (FirstName.val() == "" || FirstName.val() == null) {
+                    alert("Description Ekleyin");
+                }
+                else {
+
+                    var id = Id.val() == "" ? 0 : Id.val();
+                    var parameters = {
+                        Id: id,
+                        LastName: LastName.val(),
+                        FirstName: FirstName.val()
+                    };
+
+                    $.post("/Employe/SaveEmploye", parameters, function (data) {
+                        if (data.Success) {
+                            $('#saveEmploye').modal('hide');
+                            table.ajax.reload();
+                            resetValues();
+                        }
+                    });
+                }
+            });
+
+
+            $('#employeDataTable').on('click', 'tr td .deleteRow', function () {
+                var id = $(this).attr('id');
+
+                if (confirm("Silme işlemi yapılsın mı?")) {
+                    $.post("/Employe/DeleteEmploye", { id: id }, function (data) {
+                        if (data.Success) {
+                            alert("success");
+                            table.ajax.reload();
+                        }
+                    });
+                }
+            });
+
+            // edit
+            $('#employeDataTable').on('click', 'tr td .updateRow', function () {
+                var id = $(this).attr('id');
+                $("#saveEmploye").modal('show');
+
+                $.getJSON("/Employe/EditEmploye", { id: id }, function (response) {
+                    Id.val(response.data.Id);
+                    Name.val(response.data.Name);
+                    Description.val(response.data.Description);
+                });
+            });
+
+            //when hide modal resetting modal
+            $('#saveEmploye').on('hidden.bs.modal', function () {
+                resetValues();
+            });
+        })();
+    </script>
+}
+
